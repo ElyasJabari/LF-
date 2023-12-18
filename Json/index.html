@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript JSON Connection</title>
+</head>
+<body>
+  <h1>JavaScript JSON Connection</h1>
+  <div id="dataContainer"></div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const dataContainer = document.getElementById('dataContainer');
+
+          // JSON-Daten von einer externen API abrufen
+          fetch('https://jsonplaceholder.typicode.com/todos/3')
+              .then(response => response.json())
+              .then(data => {
+                  // Daten im HTML-Element anzeigen
+                  dataContainer.textContent = JSON.stringify(data);
+              })
+              .catch(error => console.error('Fehler beim Abrufen der Daten:', error));
+      });
+  </script>
+</body>
+</html>
