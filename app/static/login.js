@@ -34,7 +34,7 @@ submit.onclick = function () {
 
 /* var backToMain =  document.getElementById("backToMain");
 backToMain.onclick = function () {
-    window.location.href = "index.html";
+    window.location.href = "login.html";
 } */
 
 
