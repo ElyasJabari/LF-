@@ -6,66 +6,69 @@
     <title>Technician</title>
 </head>
 <body>
-<nav>
-    <div class="navbar">
-        <p>Unternehmenname und Logo</p>
-        <p>Technician</p>
-        <p>Logout</p>
-    </div>
-</nav>
-<section class="container">
-    <div class="ticketContainer">
-        <div>
-            <h3 class="ticketHeadline">
-                <span> CustomerName news site search bar </span>
-                <a>#CU-144</a>
-            </h3>
-            <span class="ticketBasics">
-                <p>Time estimate: 1h 15m</p>
-                <p>Priority: Blocker</p>
-                <p>Creation date: 12/12/23</p>
-                <p>Status: Open</p>
-                <p>Due by: 15/12/23</p>
-                <p>Category: Login</p>
-            </span>
+    <nav>
+        <div class="navbar">
+            <p>Unternehmenname und Logo</p>
+            <p>Technician</p>
+            <p>Logout</p>
         </div>
-    </div>
-</section>
-<section class="container">
-    <div class="ticketContainer">
-        <div class="ticketContent">
-            <h3 class="ticketHeadline">
-                <span> CustomerName2 news site search </span>
-                <a>#CU-144</a>
-            </h3>
-            <span class="ticketBasics">
-                <p>Time estimate: 1h</p>
-                <p>Priority: Highest</p>
-                <p>Creation date: 13/12/23</p>
-                <p>Status: Closed</p>
-                <p>Due by: 15/12/23</p>
-                <p>Category: Returns</p>
-            </span>
-        </div>
-    </div>
-</section>
-<section class="container">
-    <div class="ticketContainer">
-        <div class="ticketContent">
-            <h3 class="ticketHeadline">
-                <span> CustomerName3 news site </span>
-                <a>#CU-144</a>
-            </h3>
-            <span class="ticketBasics">
-                <p>Time estimate: 15m</p>
-                <p>Priority: Lowest</p>
-                <p>Creation date: 15/12/23</p>
-                <p>Status: Not reproducible</p>
-                <p>Due by: 15/12/23</p>
-                <p>Category: History</p>
-            </span>
-        </div>
-    </div>
-</section>
+    </nav>
+    <section class="container" id="ticketSection">
+        <!-- Hier werden die Ticket-Container dynamisch eingefügt -->
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ticketSection = document.getElementById('ticketSection');
+
+            // JSON-Daten von einer externen API abrufen
+            fetch('https://jsonplaceholder.typicode.com/todos')
+                .then(response => response.json())
+                .then(data => {
+                    // Daten im HTML-Element anzeigen
+                    data.forEach(ticket => {
+                        const ticketContainer = document.createElement('div');
+                        ticketContainer.classList.add('ticketContainer');
+
+                        const ticketContent = document.createElement('div');
+                        ticketContent.classList.add('ticketContent');
+
+                        const ticketHeadline = document.createElement('h3');
+                        ticketHeadline.classList.add('ticketHeadline');
+
+                        const customerName = document.createElement('span');
+                        customerName.textContent = ticket.title; // Hier den entsprechenden JSON-Schlüssel anpassen
+                        ticketHeadline.appendChild(customerName);
+
+                        const ticketNumber = document.createElement('a');
+                        ticketNumber.textContent = `#${ticket.id}`; // Hier den entsprechenden JSON-Schlüssel anpassen
+                        ticketHeadline.appendChild(ticketNumber);
+
+                        ticketContent.appendChild(ticketHeadline);
+
+                        const ticketBasics = document.createElement('span');
+                        ticketBasics.classList.add('ticketBasics');
+                        const basicsInfo = [
+                            `Time estimate: ${ticket.timeEstimate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Priority: ${ticket.priority}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Creation date: ${ticket.creationDate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Status: ${ticket.status}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Due by: ${ticket.dueDate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Category: ${ticket.category}` // Hier den entsprechenden JSON-Schlüssel anpassen
+                        ];
+
+                        basicsInfo.forEach(info => {
+                            const p = document.createElement('p');
+                            p.textContent = info;
+                            ticketBasics.appendChild(p);
+                        });
+
+                        ticketContent.appendChild(ticketBasics);
+                        ticketContainer.appendChild(ticketContent);
+                        ticketSection.appendChild(ticketContainer);
+                    });
+                })
+                .catch(error => console.error('Fehler beim Abrufen der Daten:', error));
+        });
+    </script>
 </body>
 </html>
