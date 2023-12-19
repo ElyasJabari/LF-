@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JavaScript JSON Connection</title>
+  <link rel="stylesheet" type="text/css" href="../../static/JsonStyle.css">
 </head>
 <body>
-  <h1>JavaScript JSON Connection</h1>
+  <h1>JSON Connection Example</h1>
   <div id="dataContainer"></div>
 
   <script>
@@ -18,7 +19,11 @@
               .then(response => response.json())
               .then(data => {
                   // Daten im HTML-Element anzeigen
-                  dataContainer.textContent = JSON.stringify(data);
+                  dataContainer.innerHTML = `
+            <h2>${data.title}</h2>
+            <p><strong>User ID:</strong> ${data.userId}</p>
+            <p><strong>Completed:</strong> ${data.completed ? 'Yes' : 'No'}</p>
+          `;
               })
               .catch(error => console.error('Fehler beim Abrufen der Daten:', error));
       });
