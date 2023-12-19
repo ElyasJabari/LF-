@@ -13,7 +13,7 @@ next1.onclick = function () {
     form2.style.left = "40px"
     */
     if (username.value === "elyas.jabari" && password.value === "anmelden"){
-        window.open("https://de.wikipedia.org/wiki/Wiki", "_blank");
+        window.location.href = "../templates/ticketlist.html";
     } else if (username.value === "" && password.value === ""){
         alert("enter your username and password")
     }else {
