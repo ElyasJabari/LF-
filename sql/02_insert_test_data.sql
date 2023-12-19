@@ -1,0 +1,27 @@
+-- Insert sample data into tbl_ticket for technical issues
+INSERT INTO tbl_ticket (title, description, creation_date, due_date, device_id, category_id, status_id)
+VALUES
+    ('Missing Orders', 'Some orders are missing from my account.', '2023-12-02 09:45:00', '2023-12-10 14:00:00', 1, 5, 1),
+    ('Login Problem', 'I am unable to log in to my account.', '2023-12-03 11:15:00', '2023-12-11 10:00:00', 3, 3, 1),
+    ('Payment Error', 'Encountering an error during the payment process.', '2023-12-05 14:30:00', '2023-12-13 16:30:00', 2, 4, 1),
+    ('Order Not Received', 'I have not received my order yet.', '2023-12-07 16:00:00', '2023-12-15 12:00:00', 4, 5, 1),
+    ('Login Timeout', 'Experiencing a timeout issue when trying to log in.', '2023-12-09 10:00:00', '2023-12-17 11:45:00', 3, 3, 1),
+    ('Incorrect Billing', 'Billing information is incorrect on my order.', '2023-12-10 12:30:00', '2023-12-18 14:15:00', 2, 4, 1),
+    ('Product Not Found', 'Unable to find a specific product on the website.', '2023-12-12 09:15:00', '2023-12-20 10:30:00', 1, 5, 1),
+    ('Login Credentials Issue', 'My login credentials are not working.', '2023-12-14 15:00:00', '2023-12-22 16:45:00', 3, 3, 1),
+    ('Payment Declined', 'My payment was declined during the checkout process.', '2023-12-16 17:30:00', '2023-12-24 12:00:00', 2, 4, 1),
+    ('Order Confirmation Missing', 'Did not receive an order confirmation for my recent purchase.', '2023-12-18 11:45:00', '2023-12-26 14:30:00', 4, 5, 1),
+    ('Account Lockout', 'My account is locked, and I cannot access it.', '2023-12-20 13:30:00', '2023-12-28 15:15:00', 3, 3, 1),
+    ('Shipping Delay', 'Experiencing a delay in the shipment of my order.', '2023-12-22 16:00:00', '2023-12-30 10:30:00', 1, 5, 1),
+    ('Login Security Question Issue', 'Unable to answer security questions during login.', '2023-12-24 14:45:00', '2024-01-01 16:00:00', 3, 3, 1),
+    ('Payment Refund Request', 'Requesting a refund for a payment issue.', '2023-12-26 10:15:00', '2024-01-03 11:30:00', 2, 4, 1),
+    ('Order Modification Error', 'Encountering an error while trying to modify my order.', '2023-12-28 12:30:00', '2024-01-05 14:15:00', 4, 5, 1),
+    ('Login Two-Factor Authentication Issue', 'Issues with two-factor authentication during login.', '2023-12-30 15:00:00', '2024-01-07 17:00:00', 3, 3, 1),
+    ('Product Quality Concern', 'Concerns about the quality of the received product.', '2024-01-01 16:45:00', '2024-01-09 10:30:00', 1, 5, 1),
+    ('Login Account Deactivation', 'Requesting assistance with account deactivation.', '2024-01-03 11:30:00', '2024-01-11 12:45:00', 3, 3, 1),
+    ('Payment Authorization Issue', 'Authorization issues during the payment process.', '2024-01-05 14:15:00', '2024-01-13 15:30:00', 2, 4, 1),
+    ('Order Tracking Problem', 'Unable to track the status of my order.', '2024-01-07 17:00:00', '2024-01-15 10:15:00', 4, 5, 1),
+    ('Login Account Compromised', 'Believe my account has been compromised.', '2024-01-09 10:30:00', '2024-01-17 11:45:00', 3, 3, 1),
+    ('Payment Double Charged', 'Double charged for the same order during payment.', '2024-01-11 12:45:00', '2024-01-19 14:00:00', 2, 4, 1),
+    ('Order Cancellation Issue', 'Encountering issues while trying to cancel my order.', '2024-01-13 15:30:00', '2024-01-21 16:15:00', 4, 5, 1),
+    ('Login Session Expired', 'Sessions expire too quickly during the login process.', '2024-01-15 10:15:00', '2024-01-23 10:30:00', 3, 3, 1);
