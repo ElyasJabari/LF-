@@ -1,0 +1,147 @@
+*{
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 1em;
+    scroll-behavior: smooth;
+    font-family: Arial;
+}
+
+body {
+    margin: 0;
+}
+
+.ticketContainer {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 45%;
+    height: 5em;
+    background-color: darkseagreen;
+}
+
+.ticketHeadline {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-content: flex-start;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.ticketBasics {
+    font-size: 0.75em;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: flex-end;
+}
+
+
+
+.navbar {
+    width: 100%;
+    height: 3.5em;
+    background-color: darkseagreen;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: flex-start;
+}
+
+
+
+.formContainer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    height: 70%;
+    background-color: darkseagreen;
+    padding-bottom: 3em;
+    margin-top: 3em;
+}
+
+label {
+    padding-left: 0.5em;
+    text-align: right;
+    width: 8em;
+    display: inline-block;
+}
+
+input {
+    border: 0px;
+}
+
+.customerID {
+    font-size: 1.25em;
+    padding-top: 4em;
+}
+
+.title {
+    font-size: 1.25em;
+    width: 75%;
+    padding-top: 1em;
+}
+
+#title {
+    font-size: 0.75em;
+    width: 75%;
+}
+
+.description {
+    font-size: 1.25em;
+    width: 75%;
+    padding-top: 2em;
+}
+
+textarea {
+    margin-left: 11.3em;
+    margin-top: -1.5em;
+}
+
+#description {
+    font-family: Arial;
+    height: 20em;
+    text-align: left;
+    letter-spacing: 1px;
+    font-size: 0.75em;
+    width: 100%;
+    border: 0px;
+}
+
+.estimatedTime {
+    font-size: 1.25em;
+    padding-top: 2em;
+}
+
+#ET {
+    font-size: 0.75em;
+}
+
+.priority {
+    font-size: 1.25em;
+    padding-top: 1em;
+}
+
+#priority {
+    font-size: 0.75em;
+}
+
+.creationD {
+    font-size: 1.25em;
+    padding-top: 1em;
+}
+
+#creationD {
+    font-size: 0.75em;
+}
+
+.dueDate {
+    font-size: 1.25em;
+    padding-top: 1em;
+}
+
+#dueD {
+    font-size: 0.75em;
+}
