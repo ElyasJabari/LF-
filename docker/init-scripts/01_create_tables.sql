@@ -54,3 +54,21 @@ CREATE TABLE tbl_ticket (
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES ref_category(id),
     CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES ref_status(id)
 );
+
+-- Table for user roles
+CREATE TABLE ref_role (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+
+-- Inserting predefined roles into ref_role table
+INSERT INTO ref_role (name) VALUES ('Technician'), ('Support');
+
+-- Table for users
+CREATE TABLE tbl_user (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL, -- Consider using a secure hashing algorithm for passwords
+    role_id INTEGER REFERENCES ref_role(id) NOT NULL
+);
+

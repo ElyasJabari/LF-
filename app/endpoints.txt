@@ -1,0 +1,17 @@
+/ticket/#           -> get Ticket by id
+
+/ticket/status/#    -> get Ticket status name by status id
+/ticket/category/#
+/ticket/device/#
+/user/role/#        -> get User Role by role id
+
+/user/verify *json  -> { username: 'username', password: 'password' }
+ 200 -> returned url -> service
+ 400 -> Error
+
+/user/#
+
+/user/create { username: 'username', password: 'password' }
+ 200 -> Succesfull
+ 400 -> Error
+
