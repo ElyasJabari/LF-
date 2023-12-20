@@ -20,7 +20,7 @@ class Connection:
         try:
             self.connection = psycopg2.connect(**Connection.db_params)
         except psycopg2.Error as e:
-            print(f'Error connecting to {database}')
+            raise ConnectionError(f'Error connecting to {database}\n\n{str(e)}')
 
     @staticmethod
     def get():
@@ -65,11 +65,9 @@ class Connection:
 
     @staticmethod
     def get_id(table, column, value):
-        select_query = f'SELECT id FROM {table} WHERE {column} = %s;'
+        select_query = f'SELECT id FROM {table} WHERE {column} = {value};'
 
-        values = (value,)
-
-        result = Connection.query_data(select_query, values)
+        result = Connection.query_data(select_query)
 
         # Check if the result is not empty
         if result:
@@ -85,15 +83,25 @@ class User:
         @staticmethod
         def hash(password):
             return password[::-1]
+
     class Role:
         @staticmethod
         def get_role_name(role_id):
             return Connection.get_ref_by_id('ref_role', 'name', role_id)
 
-    def __init__(self, username, password, role_id):
+    def __init__(self, id__, username, password, role_id):
+        self.id = id__
         self.username = username
         self.password = password
         self.role_id = role_id
+
+    def serialize(self):
+        return {
+            'username': self.username,
+            'id': self.id,
+            'password': self.password,
+            'role_id': self.role_id
+        }
 
     def __eq__(self, other):
         return self.username == other.username and self.password == other.password
@@ -101,27 +109,41 @@ class User:
     @staticmethod
     def get_by_username(username):
         # SQL query to get a user by username
-        select_user_query = "SELECT * FROM tbl_user WHERE username = %s;"
+        select_user_query = f"SELECT * FROM tbl_user WHERE username = '{username}';"
 
         # Values to be used in the query
         values = (username,)
 
         # Use the Connection class to query the user
-        result = Connection.query_data(select_user_query, values)
+        result = Connection.query_data(select_user_query)
 
         # Check if the result is not empty
         if result:
             # Assuming the result is a single user (change if needed)
             user_data = result[0]
             user = User(
-                user_id=user_data[0],
+                id__=user_data[0],
                 username=user_data[1],
-                password=user_data[2],
-                role=user_data[3]
+                password=User.Password.hash(user_data[2]),
+                role_id=user_data[3]
             )
             return user
         else:
             raise ValueError(f'No user for username {username} could be found.')
+
+    @staticmethod
+    def is_username_taken(username):
+        # SQL query to check if a username already exists
+        check_username_query = f"SELECT id FROM tbl_user WHERE username = '{username}';"
+
+        # Values to be used in the query
+        values = (username,)
+
+        # Use the Connection class to query the database
+        result = Connection.query_data(check_username_query)
+
+        # Check if the result is not empty
+        return bool(result)
 
     @staticmethod
     def create_user(username, password, role_id):
@@ -129,13 +151,16 @@ class User:
         hashed_password = User.Password.hash(password)
 
         # SQL query to insert a new user
-        insert_user_query = "INSERT INTO tbl_user (username, password, role_id) VALUES (%s, %s, %s);"
+        insert_user_query = 'INSERT INTO tbl_user (username, password, role_id) VALUES (%s, %s, %s);'
 
         # Values to be inserted into the user table
         values = (username, hashed_password, role_id)
 
         # Use the Connection class to insert the new user
         Connection.execute_query(insert_user_query, values)
+
+        return User.get_by_username(username)
+
 
 class Ticket:
     class Device:
@@ -347,16 +372,43 @@ def login():
     try:
         user = User.get_by_username(username)
     except Exception as e:
-        return jsonify({'error': e}), 400
-
+        return jsonify({'error': f'No user could be found.\n\n{str(e)}'}), 400
 
     # Check if the provided credentials are valid
     if user.username == username and user.password == password:
         # Replace the following URL with the actual URL for the designated account
         account_url = User.Role.get_role_name(user.role_id)
-        return jsonify({'status': 200, 'account_url': account_url})
+        return jsonify({'status': 200, 'account_url': f'/{account_url}'})
     else:
         return jsonify({'error': 'Invalid credentials'}), 400
+
+
+@app.route('/user/create', methods=['POST'])
+def create():
+    data = request.get_json()
+
+    if 'username' not in data or 'password' not in data or 'role_id' not in data:
+        return jsonify({'error': 'Username, password and role_id are required'}), 400
+
+    username = data['username']
+    password = data['password']
+    role_id = data['role_id']
+
+    try:
+        role = User.Role.get_role_name(role_id)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+    try:
+        found = User.is_username_taken(username)
+        if not found:
+            user = User.create_user(username, password, role_id)
+
+            return jsonify(user.serialize()), 200
+        else:
+            return jsonify({'error': 'Username was already taken'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 
 # Endpoint to render login.html
