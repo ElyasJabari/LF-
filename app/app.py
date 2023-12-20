@@ -1,13 +1,12 @@
 from flask import Flask, request, jsonify, render_template
-
 import psycopg2
-from psycopg2 import sql
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
 
 class Connection:
+    # Database connection parameters
     db_params = {
         'host': 'localhost',
         'database': 'dev',
@@ -18,17 +17,19 @@ class Connection:
 
     def __init__(self, host, database, user, password):
         try:
+            # Establish a connection to the PostgreSQL database
             self.connection = psycopg2.connect(**Connection.db_params)
         except psycopg2.Error as e:
             raise ConnectionError(f'Error connecting to {database}\n\n{str(e)}')
 
     @staticmethod
     def get():
+        # Static method to get a Connection instance
         return Connection('localhost', 'dev', 'postgres', 'postgres')
 
     @staticmethod
-    # Function to query data from the table
     def query_data(select_query):
+        # Query data from the table using a provided SELECT query
         connection = Connection.get()
         with connection.connection.cursor() as cursor:
             cursor.execute(select_query)
@@ -36,8 +37,8 @@ class Connection:
             return rows
 
     @staticmethod
-    # Function to insert or update data in the table
     def execute_query(query, values=None):
+        # Execute INSERT or UPDATE queries on the table
         connection = Connection.get()
         with connection.connection.cursor() as cursor:
             if values:
@@ -47,17 +48,11 @@ class Connection:
         connection.connection.commit()
 
     @staticmethod
-    # Function to select ref values by id
     def get_ref_by_id(table, column, id__):
-        # SQL query to get the device name by ID
+        # Get reference values by ID from a specified table and column
         select_query = f'SELECT {column} FROM {table} WHERE id = {id__};'
-
-        # Use the Connection class to query the device name
         result = Connection.query_data(select_query)
-
-        # Check if the result is not empty
         if result:
-            # Assuming the result is a single device name (change if needed)
             name = result[0][0]
             return name
         else:
@@ -65,13 +60,10 @@ class Connection:
 
     @staticmethod
     def get_id(table, column, value):
+        # Get the ID by matching a value in a specified table and column
         select_query = f'SELECT id FROM {table} WHERE {column} = {value};'
-
         result = Connection.query_data(select_query)
-
-        # Check if the result is not empty
         if result:
-            # Assuming the result is a single device name (change if needed)
             id__ = result[0][0]
             return id__
         else:
@@ -82,11 +74,13 @@ class User:
     class Password:
         @staticmethod
         def hash(password):
+            # Simple password hashing method (replace with a secure hashing algorithm)
             return password[::-1]
 
     class Role:
         @staticmethod
         def get_role_name(role_id):
+            # Get the role name by ID
             return Connection.get_ref_by_id('ref_role', 'name', role_id)
 
     def __init__(self, id__, username, password, role_id):
@@ -96,6 +90,7 @@ class User:
         self.role_id = role_id
 
     def serialize(self):
+        # Serialize user information
         return {
             'username': self.username,
             'id': self.id,
@@ -104,22 +99,16 @@ class User:
         }
 
     def __eq__(self, other):
+        # Check if two User objects are equal
         return self.username == other.username and self.password == other.password
 
     @staticmethod
     def get_by_username(username):
-        # SQL query to get a user by username
+        # Get user information by username
         select_user_query = f"SELECT * FROM tbl_user WHERE username = '{username}';"
-
-        # Values to be used in the query
         values = (username,)
-
-        # Use the Connection class to query the user
         result = Connection.query_data(select_user_query)
-
-        # Check if the result is not empty
         if result:
-            # Assuming the result is a single user (change if needed)
             user_data = result[0]
             user = User(
                 id__=user_data[0],
@@ -133,32 +122,19 @@ class User:
 
     @staticmethod
     def is_username_taken(username):
-        # SQL query to check if a username already exists
+        # Check if a username is already taken
         check_username_query = f"SELECT id FROM tbl_user WHERE username = '{username}';"
-
-        # Values to be used in the query
         values = (username,)
-
-        # Use the Connection class to query the database
         result = Connection.query_data(check_username_query)
-
-        # Check if the result is not empty
         return bool(result)
 
     @staticmethod
     def create_user(username, password, role_id):
-        # Hash the password using a secure hashing algorithm (e.g., bcrypt)
+        # Hash the password and insert a new user
         hashed_password = User.Password.hash(password)
-
-        # SQL query to insert a new user
         insert_user_query = 'INSERT INTO tbl_user (username, password, role_id) VALUES (%s, %s, %s);'
-
-        # Values to be inserted into the user table
         values = (username, hashed_password, role_id)
-
-        # Use the Connection class to insert the new user
         Connection.execute_query(insert_user_query, values)
-
         return User.get_by_username(username)
 
 
@@ -166,16 +142,19 @@ class Ticket:
     class Device:
         @staticmethod
         def get_device_name(device_id):
+            # Get the device name by ID
             return Connection.get_ref_by_id('ref_device', 'name', device_id)
 
     class Status:
         @staticmethod
         def get_status_name(status_id):
+            # Get the status name by ID
             return Connection.get_ref_by_id('ref_status', 'name', status_id)
 
     class Category:
         @staticmethod
         def get_category_name(category_id):
+            # Get the category name by ID
             return Connection.get_ref_by_id('ref_category', 'name', category_id)
 
     def __init__(self, title, description, ticket_id, creation_date, due_date, device_id, category_id, status_id):
@@ -189,6 +168,7 @@ class Ticket:
         self.status_id = status_id
 
     def serialize(self):
+        # Serialize ticket information
         return {
             'title': self.title,
             'id': self.id,
@@ -202,35 +182,21 @@ class Ticket:
 
     @staticmethod
     def create(title, description, device, category, status):
-        # Get the current date and a second date two weeks later
+        # Create a new ticket with default dates
         current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         due_date = (datetime.now() + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
-
-        # SQL query to insert a new ticket
         insert_query = "INSERT INTO tbl_ticket (title, description, creation_date, due_date, device_id, category_id, status_id) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-
-        # Values to be inserted into the ticket table
         values = (title, description, current_date, due_date, device, category, status)
-
-        # Use the Connection class to insert the new ticket
         Connection.execute_query(insert_query, values)
 
     @staticmethod
     def get_ticket_by_id(ticket_id):
-        # SQL query to get a ticket by ID
+        # Get a ticket by ID
         select_query = f'SELECT * FROM tbl_ticket WHERE id = {ticket_id};'
-
-        # Values to be used in the query
         values = (ticket_id,)
-
-        # Use the Connection class to query the ticket
         result = Connection.query_data(select_query)
-
-        # Check if the result is not empty
         if result:
-            # Assuming the result is a single ticket (change if needed)
             row = result[0]
-
             ticket = Ticket(
                 ticket_id=row[0],
                 title=row[1],
@@ -241,31 +207,21 @@ class Ticket:
                 category_id=row[6],
                 status_id=row[7]
             )
-
             return ticket
         else:
-            # Ticket not found
             raise ValueError(f'Could not find ticket with id {ticket_id}')
 
     def save_ticket_to_db(self):
-        # SQL query to update a ticket by ID
+        # Update a ticket by ID
         update_query = "UPDATE tbl_ticket SET title = %s, description = %s, device_id = %s, category_id = %s, status_id = %s WHERE id = %s;"
-
-        # Values to be used in the update query
-        values = (self.title, self.description, self.device_id, self.category_id, self.status_id, self.ticket_id)
-
-        # Use the Connection class to update the ticket
+        values = (self.title, self.description, self.device_id, self.category_id, self.status_id, self.id)
         Connection.execute_query(update_query, values)
 
     @staticmethod
     def get_all_tickets_serialized():
-        # SQL query to get all tickets
+        # Get all tickets and serialize them
         select_all_query = "SELECT * FROM tbl_ticket;"
-
-        # Use the Connection class to query all tickets
         result = Connection.query_data(select_all_query)
-
-        # Create a list of Ticket objects from the query result
         tickets = []
         for row in result:
             ticket = Ticket(
@@ -279,7 +235,6 @@ class Ticket:
                 status_id=row[7]
             )
             tickets.append(ticket.serialize())
-
         return tickets
 
 
@@ -288,12 +243,9 @@ class Ticket:
 def post_ticket():
     try:
         data = request.get_json()
-
         # Deserialize the JSON payload into a Ticket object
         Ticket.create(data['title'], data['description'], data['device'], data['category'], data['status'])
-
         return jsonify({'message': 'Ticket created successfully'}), 201
-
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
@@ -329,7 +281,7 @@ def get_status_name(status_id):
         return jsonify({'error': 'Status not found'}), 404
 
 
-# Example endpoint for getting the category name
+# Endpoint for getting the category name
 @app.route('/ticket/category/<int:category_id>', methods=['GET'])
 def get_category_name(category_id):
     category_name = Ticket.Category.get_category_name(category_id)
@@ -339,7 +291,7 @@ def get_category_name(category_id):
         return jsonify({'error': 'Category not found'}), 404
 
 
-# Example endpoint for getting the device name
+# Endpoint for getting the device name
 @app.route('/ticket/device/<int:device_id>', methods=['GET'])
 def get_device_name(device_id):
     device_name = Ticket.Device.get_device_name(device_id)
@@ -349,31 +301,28 @@ def get_device_name(device_id):
         return jsonify({'error': 'Device not found'}), 404
 
 
-# Example endpoint for getting the role name
+# Endpoint for getting the role name
 @app.route('/user/role/<int:role_id>', methods=['GET'])
 def get_role_name(role_id):
     role_name = User.Role.get_role_name(role_id)
     if role_name is not None:
         return jsonify({'role_name': role_name})
     else:
-        return jsonify({'error': 'Device not found'}), 404
+        return jsonify({'error': 'Role not found'}), 404
 
 
+# Endpoint for verifying the login credentials
 @app.route('/user/verify', methods=['POST'])
 def login():
     data = request.get_json()
-
     if 'username' not in data or 'password' not in data:
         return jsonify({'error': 'Username and password are required'}), 400
-
     username = data['username']
     password = data['password']
-
     try:
         user = User.get_by_username(username)
     except Exception as e:
         return jsonify({'error': f'No user could be found.\n\n{str(e)}'}), 400
-
     # Check if the provided credentials are valid
     if user.username == username and user.password == password:
         # Replace the following URL with the actual URL for the designated account
@@ -383,27 +332,23 @@ def login():
         return jsonify({'error': 'Invalid credentials'}), 400
 
 
+# Endpoint for creating a new account
 @app.route('/user/create', methods=['POST'])
 def create():
     data = request.get_json()
-
     if 'username' not in data or 'password' not in data or 'role_id' not in data:
         return jsonify({'error': 'Username, password and role_id are required'}), 400
-
     username = data['username']
     password = data['password']
     role_id = data['role_id']
-
     try:
         role = User.Role.get_role_name(role_id)
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-
     try:
         found = User.is_username_taken(username)
         if not found:
             user = User.create_user(username, password, role_id)
-
             return jsonify(user.serialize()), 200
         else:
             return jsonify({'error': 'Username was already taken'}), 400
