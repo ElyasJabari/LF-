@@ -13,7 +13,7 @@ next1.onclick = function () {
     form2.style.left = "40px"
     */
     if (username.value === "elyas.jabari" && password.value === "anmelden"){
-        window.location.href = "../templates/ticketlist.html";
+        window.location.href = "../templates/support.html";
     } else if (username.value === "" && password.value === ""){
         alert("enter your username and password")
     }else {
