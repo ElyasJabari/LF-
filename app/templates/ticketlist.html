@@ -28,7 +28,7 @@
             const ticketSection = document.getElementById('ticketSection');
 
             // JSON-Daten von einer externen API abrufen
-            fetch('https://jsonplaceholder.typicode.com/todos')
+            fetch('http://127.0.0.1:5000/tickets')
                 .then(response => response.json())
                 .then(data => {
                     // Daten im HTML-Element anzeigen
@@ -55,11 +55,11 @@
                         const ticketBasics = document.createElement('span');
                         ticketBasics.classList.add('ticketBasics');
                         const basicsInfo = [
-                            `Time estimate: ${ticket.timeEstimate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Time estimate: ${ticket.ET}`, // Hier den entsprechenden JSON-Schlüssel anpassen
                             `Priority: ${ticket.priority}`, // Hier den entsprechenden JSON-Schlüssel anpassen
-                            `Creation date: ${ticket.creationDate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Creation date: ${ticket.creation_date}`, // Hier den entsprechenden JSON-Schlüssel anpassen
                             `Status: ${ticket.status}`, // Hier den entsprechenden JSON-Schlüssel anpassen
-                            `Due by: ${ticket.dueDate}`, // Hier den entsprechenden JSON-Schlüssel anpassen
+                            `Due by: ${ticket.due_date}`, // Hier den entsprechenden JSON-Schlüssel anpassen
                             `Category: ${ticket.category}` // Hier den entsprechenden JSON-Schlüssel anpassen
                         ];
 
