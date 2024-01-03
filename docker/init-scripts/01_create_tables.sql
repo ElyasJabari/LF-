@@ -72,3 +72,6 @@ CREATE TABLE tbl_user (
     role_id INTEGER REFERENCES ref_role(id) NOT NULL
 );
 
+-- Beispiel: Einfügen von Daten in eine Tabelle
+-- INSERT INTO tbl_user (id, username, password, role_id) VALUES (1, 'Elyas.jabari', 'anmelden', 1);
+
