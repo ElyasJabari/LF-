@@ -20,29 +20,34 @@ next1.onclick = function () {
         alert("Wrong password")
     }*/
 
+    // send POST mit username/password as JSON
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/login", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
+/*    const user_query = "SELECT * FROM tbl_user WHERE username = ?";
+    console.log(user_query);
+    if (user_query.valueOf() === username.valueOf()){
+        console.log("anmelden")
+    }else {
+        console.log("etwas schief gelaufen")
+    }*/
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            const response = JSON.parse(xhr.responseText);
+    fetch('http://127.0.0.1:5000/user/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value,
+        }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 
-            if (response.success) {
-                window.location.href = "../templates/support.html";
-            } else {
-                alert("Falscher Benutzername oder Passwort");
-            }
-        }
-    };
-
-    const data = {
-        username: username.value,
-        password: password.value
-    };
-
-    xhr.send(JSON.stringify(data));
 
 }
 createAccount.onclick = function () {

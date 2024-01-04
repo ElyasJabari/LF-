@@ -103,22 +103,12 @@ class User:
         return self.username == other.username and self.password == other.password
 
     @staticmethod
-    def get_by_username(username):
-        # Get user information by username
-        select_user_query = f"SELECT * FROM tbl_user WHERE username = '{username}';"
-        values = (username,)
-        result = Connection.query_data(select_user_query)
-        if result:
-            user_data = result[0]
-            user = User(
-                id__=user_data[0],
-                username=user_data[1],
-                password=User.Password.hash(user_data[2]),
-                role_id=user_data[3]
-            )
-            return user
-        else:
-            raise ValueError(f'No user for username {username} could be found.')
+    def checkLogin(username, password):
+        connection = Connection.get()
+        with connection.connection.cursor() as cursor:
+            cursor.execute("select * from tbl_user where username = %s and password = %s", (username, password))
+            print(cursor.rowcount)
+            return cursor.rowcount == 1
 
     @staticmethod
     def is_username_taken(username):
@@ -135,7 +125,7 @@ class User:
         insert_user_query = 'INSERT INTO tbl_user (username, password, role_id) VALUES (%s, %s, %s);'
         values = (username, hashed_password, role_id)
         Connection.execute_query(insert_user_query, values)
-        return User.get_by_username(username)
+        return User.checkLogin(username)
 
 
 class Ticket:
@@ -315,21 +305,28 @@ def get_role_name(role_id):
 @app.route('/user/verify', methods=['POST'])
 def login():
     data = request.get_json()
+    print("Received data:", data)
     if 'username' not in data or 'password' not in data:
+        print("not OK")
         return jsonify({'error': 'Username and password are required'}), 400
+    else:
+        print("OK")
     username = data['username']
     password = data['password']
     try:
-        user = User.get_by_username(username)
+        user_login_ok = User.checkLogin(username, password)
+        print("OK")
     except Exception as e:
+        print(e)
         return jsonify({'error': f'No user could be found.\n\n{str(e)}'}), 400
     # Check if the provided credentials are valid
-    if user.username == username and user.password == password:
+    if user_login_ok:
         # Replace the following URL with the actual URL for the designated account
-        account_url = User.Role.get_role_name(user.role_id)
-        return jsonify({'status': 200, 'account_url': f'/{account_url}'})
+        print("johoooo")
+        return jsonify({'status': 200, 'account_url': f'/ticketlist'})
     else:
-        return jsonify({'error': 'Invalid credentials'}), 400
+        print("no johooo " + username)
+        return jsonify({'status': 403, 'error': 'Invalid credentials'}), 400
 
 
 # Endpoint for creating a new account
