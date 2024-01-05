@@ -1,16 +1,17 @@
-var form1 =  document.getElementById("form1");
-var form2 =  document.getElementById("form2");
-var next1 =  document.getElementById("next1");
+var signIn_form =  document.getElementById("signIn_form");
+var create_user =  document.getElementById("create_user");
+var signInButton =  document.getElementById("signInButton");
 var submit =  document.getElementById("submit");
-var back1 =  document.getElementById("back1");
+var backToSignIn =  document.getElementById("backToSignIn");
 var createAccount =  document.getElementById("createAccount");
 var username =  document.getElementById("username");
 var password =  document.getElementById("password");
 
-next1.onclick = function () {
+
+signInButton.onclick = function () {
     /*
-    form1.style.left = "-450px"
-    form2.style.left = "40px"
+    signIn_form.style.left = "-450px"
+    create_user.style.left = "40px"
     */
 /*    if (username.value === "elyas.jabari" && password.value === "anmelden"){
         window.location.href = "../templates/support.html";
@@ -42,7 +43,10 @@ next1.onclick = function () {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data.message);
+            console.log(data);
+            if (data.status === 200) {
+                window.location.replace(data.account_url);
+            }
         })
         .catch(error => {
             console.error('Error:', error);
@@ -50,16 +54,57 @@ next1.onclick = function () {
 
 
 }
-createAccount.onclick = function () {
-    form1.style.left = "-450px"
-    form2.style.left = "40px"
-}
-back1.onclick = function () {
-    form1.style.left = "40px"
-    form2.style.left = "450px"
-}
+
 submit.onclick = function () {
-    window.location.href = "test.html";
+    var usernameCreateUser = document.getElementById("usernameCreateUser");
+    var passwordCreateUser = document.getElementById("passwordCreateUser");
+    var confirmPassword = document.getElementById("confirmPassword");
+    var role_id = document.querySelector('input[name="role_id"]:checked');
+
+    if (passwordCreateUser.value !== confirmPassword.value) {
+        alert("Passwörter stimmen nicht überein");
+        return;
+    }
+    if (role_id === null) {
+        alert("Bitte ein Rolle auswählen");
+        return;
+    }
+
+
+    fetch('http://127.0.0.1:5000/user/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: usernameCreateUser.value,
+            password: passwordCreateUser.value,
+            role_id: role_id ? role_id.value : null,
+        }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.status === 200) {
+                console.log("daten ist angekomme: " + data)
+                //window.location.replace(data.account_url);
+            } else {
+                console.log(data)
+            }
+        })
+        .catch(error => {
+            console.error('Fehler:', error);
+        });
+}
+
+
+createAccount.onclick = function () {
+    signIn_form.style.left = "-450px"
+    create_user.style.left = "40px"
+}
+backToSignIn.onclick = function () {
+    signIn_form.style.left = "40px"
+    create_user.style.left = "450px"
 }
 
 /* var backToMain =  document.getElementById("backToMain");

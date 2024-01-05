@@ -75,6 +75,7 @@ class User:
         @staticmethod
         def hash(password):
             # Simple password hashing method (replace with a secure hashing algorithm)
+            # TODO: https://stackoverflow.com/questions/9594125/salt-and-hash-a-password-in-python
             return password[::-1]
 
     class Role:
@@ -105,27 +106,26 @@ class User:
     @staticmethod
     def checkLogin(username, password):
         connection = Connection.get()
+        gehashtes_passwort = User.Password.hash(password)
         with connection.connection.cursor() as cursor:
-            cursor.execute("select * from tbl_user where username = %s and password = %s", (username, password))
-            print(cursor.rowcount)
+            cursor.execute("select role_id from tbl_user where username = %s and password = %s", (username, gehashtes_passwort))
+            user_data = cursor.fetchone()
+            return {'loginOk': cursor.rowcount == 1, 'role_id': user_data[0] if user_data else None}
+
+    @staticmethod
+    def user_exists(username):
+        connection = Connection.get()
+        with connection.connection.cursor() as cursor:
+            cursor.execute("select * from tbl_user where username = %s", (username,))
             return cursor.rowcount == 1
 
     @staticmethod
-    def is_username_taken(username):
-        # Check if a username is already taken
-        check_username_query = f"SELECT id FROM tbl_user WHERE username = '{username}';"
-        values = (username,)
-        result = Connection.query_data(check_username_query)
-        return bool(result)
-
-    @staticmethod
-    def create_user(username, password, role_id):
-        # Hash the password and insert a new user
-        hashed_password = User.Password.hash(password)
+    def create_user(benutzername, passwort, role_id):
+        gehashtes_passwort = User.Password.hash(passwort)
         insert_user_query = 'INSERT INTO tbl_user (username, password, role_id) VALUES (%s, %s, %s);'
-        values = (username, hashed_password, role_id)
+        values = (benutzername, gehashtes_passwort, role_id)
         Connection.execute_query(insert_user_query, values)
-        return User.checkLogin(username)
+        return {'status': 200, 'message': 'Benutzer erfolgreich erstellt', 'account_url': 'URL_ZUR_WEITERLEITUNG'}
 
 
 class Ticket:
@@ -320,10 +320,18 @@ def login():
         print(e)
         return jsonify({'error': f'No user could be found.\n\n{str(e)}'}), 400
     # Check if the provided credentials are valid
-    if user_login_ok:
+    if user_login_ok['loginOk']:
         # Replace the following URL with the actual URL for the designated account
         print("johoooo")
-        return jsonify({'status': 200, 'account_url': f'/ticketlist'})
+        # TODO: uuid erzeugen, in neuer Spalte "session_id" speichern, als Cookie zurückgeben an Browser
+        # später für jede Route einbauen: test auf Cookie seesion_id in Tabelle tbl_user
+        # Logout: suche session_id in tbl_user und dort löschen.
+        # create sessionId and save to user data
+        if user_login_ok['role_id'] == 1:
+            return jsonify({'status': 200, 'account_url': f'/ticketlist'})
+        else:
+            return jsonify({'status': 200, 'account_url': f'/support'})
+
     else:
         print("no johooo " + username)
         return jsonify({'status': 403, 'error': 'Invalid credentials'}), 400
@@ -333,21 +341,20 @@ def login():
 @app.route('/user/create', methods=['POST'])
 def create():
     data = request.get_json()
+    print("Received data create User:", data)
     if 'username' not in data or 'password' not in data or 'role_id' not in data:
+        print("not OK CU")
         return jsonify({'error': 'Username, password and role_id are required'}), 400
     username = data['username']
     password = data['password']
     role_id = data['role_id']
     try:
-        role = User.Role.get_role_name(role_id)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-    try:
-        found = User.is_username_taken(username)
-        if not found:
+        if not User.user_exists(username):
+            print("hohoho CU")
             user = User.create_user(username, password, role_id)
             return jsonify(user.serialize()), 200
         else:
+            print("no hohoho CU")
             return jsonify({'error': 'Username was already taken'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 400
@@ -368,7 +375,13 @@ def render_ticket():
 # Endpoint to render ticketlist.html
 @app.route('/ticketlist')
 def render_ticketlist():
+    # check cookie sessionId in user table - if ok show ticketlist else show login  --> Zukunft Elyas
     return render_template('ticketlist.html')
+
+@app.route('/support')
+def render_support():
+    # check cookie sessionId in user table - if ok show support else show login  --> Zukunft Elyas
+    return render_template('support.html')
 
 
 # Endpoint to render technician.html

@@ -9,26 +9,31 @@
 </head>
 <body>
     <div class="container">
-        <form id="form1">
+        <form id="signIn_form">
             <h3>Sign in</h3>
             <input type="text" placeholder="Username" required id="username">
             <input type="password" placeholder="Password" required id="password">
 
             <div class="btn-box">
-                <button type="button" id="next1">Next</button>
+                <button type="button" id="signInButton">Next</button>
             </div>
 
             <h4 id="createAccount">Create an account</h4>
         </form>
 
-        <form id="form2">
+        <form id="create_user">
             <h3>Create an account</h3>
-            <input type="text" placeholder="Username" required>
-            <input type="text" placeholder="Password" required>
-            <input type="text" placeholder="Confirm Password" required>
-        
+            <input type="text" id="usernameCreateUser" name="username" placeholder="Username" required>
+            <input type="password" id="passwordCreateUser" name="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+
+            <input type="radio" id="rolle1" name="role_id" value="1">
+            <label for="rolle1">Techniker</label><br>
+            <input type="radio" id="rolle2" name="role_id" value="2">
+            <label for="rolle2">Support</label><br>
+
             <div class="btn-box">
-                <button type="button" id="back1">Back</button>
+                <button type="button" id="backToSignIn">Back</button>
                 <button type="button" id="submit">Submit</button>
             </div>
         </form>
