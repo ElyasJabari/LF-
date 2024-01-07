@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 import psycopg2
 from datetime import datetime, timedelta
 
@@ -359,6 +359,9 @@ def create():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+@app.route('/logout')
+def logout():
+    return redirect(url_for('render_login'))
 
 # Endpoint to render login.html
 @app.route('/login')
