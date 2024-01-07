@@ -135,17 +135,41 @@ class Ticket:
             # Get the device name by ID
             return Connection.get_ref_by_id('ref_device', 'name', device_id)
 
+        @staticmethod
+        def get_all_devices():
+            # Get a list of all devices with their IDs and names
+            select_all_query = "SELECT id, name FROM ref_device;"
+            result = Connection.query_data(select_all_query)
+            devices = [{'id': row[0], 'name': row[1]} for row in result]
+            return devices
+
     class Status:
         @staticmethod
         def get_status_name(status_id):
             # Get the status name by ID
             return Connection.get_ref_by_id('ref_status', 'name', status_id)
 
+        @staticmethod
+        def get_all_statuses():
+            # Get a list of all statuses with their IDs and names
+            select_all_query = "SELECT id, name FROM ref_status;"
+            result = Connection.query_data(select_all_query)
+            statuses = [{'id': row[0], 'name': row[1]} for row in result]
+            return statuses
+
     class Category:
         @staticmethod
         def get_category_name(category_id):
             # Get the category name by ID
             return Connection.get_ref_by_id('ref_category', 'name', category_id)
+
+        @staticmethod
+        def get_all_categories():
+            # Get a list of all categories with their IDs and names
+            select_all_query = "SELECT id, name FROM ref_category;"
+            result = Connection.query_data(select_all_query)
+            categories = [{'id': row[0], 'name': row[1]} for row in result]
+            return categories
 
     def __init__(self, title, description, ticket_id, creation_date, due_date, device_id, category_id, status_id):
         self.title = title
@@ -300,6 +324,17 @@ def get_role_name(role_id):
     else:
         return jsonify({'error': 'Role not found'}), 404
 
+@app.route('/status/list', methods=['GET'])
+def get_all_statuses():
+    # Get all statuses and return them as JSON
+    all_statuses = Ticket.Status.get_all_statuses()
+    return jsonify(all_statuses)
+
+@app.route('/category/list', methods=['GET'])
+def get_all_categories():
+    # Get all categories and return them as JSON
+    all_categories = Ticket.Category.get_all_categories()
+    return jsonify(all_categories)
 
 # Endpoint for verifying the login credentials
 @app.route('/user/verify', methods=['POST'])
@@ -321,12 +356,6 @@ def login():
         return jsonify({'error': f'No user could be found.\n\n{str(e)}'}), 400
     # Check if the provided credentials are valid
     if user_login_ok['loginOk']:
-        # Replace the following URL with the actual URL for the designated account
-        print("johoooo")
-        # TODO: uuid erzeugen, in neuer Spalte "session_id" speichern, als Cookie zurückgeben an Browser
-        # später für jede Route einbauen: test auf Cookie seesion_id in Tabelle tbl_user
-        # Logout: suche session_id in tbl_user und dort löschen.
-        # create sessionId and save to user data
         if user_login_ok['role_id'] == 1:
             return jsonify({'status': 200, 'account_url': f'/ticketlist'})
         else:
@@ -336,6 +365,12 @@ def login():
         print("no johooo " + username)
         return jsonify({'status': 403, 'error': 'Invalid credentials'}), 400
 
+# In your Flask application, add the following route
+@app.route('/device/list', methods=['GET'])
+def get_all_devices():
+    # Get all devices and return them as JSON
+    all_devices = Ticket.Device.get_all_devices()
+    return jsonify(all_devices)
 
 # Endpoint for creating a new account
 @app.route('/user/create', methods=['POST'])
