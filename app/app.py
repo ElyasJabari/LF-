@@ -324,17 +324,20 @@ def get_role_name(role_id):
     else:
         return jsonify({'error': 'Role not found'}), 404
 
+
 @app.route('/status/list', methods=['GET'])
 def get_all_statuses():
     # Get all statuses and return them as JSON
     all_statuses = Ticket.Status.get_all_statuses()
     return jsonify(all_statuses)
 
+
 @app.route('/category/list', methods=['GET'])
 def get_all_categories():
     # Get all categories and return them as JSON
     all_categories = Ticket.Category.get_all_categories()
     return jsonify(all_categories)
+
 
 # Endpoint for verifying the login credentials
 @app.route('/user/verify', methods=['POST'])
@@ -365,12 +368,14 @@ def login():
         print("no johooo " + username)
         return jsonify({'status': 403, 'error': 'Invalid credentials'}), 400
 
+
 # In your Flask application, add the following route
 @app.route('/device/list', methods=['GET'])
 def get_all_devices():
     # Get all devices and return them as JSON
     all_devices = Ticket.Device.get_all_devices()
     return jsonify(all_devices)
+
 
 # Endpoint for creating a new account
 @app.route('/user/create', methods=['POST'])
@@ -387,12 +392,18 @@ def create():
         if not User.user_exists(username):
             print("hohoho CU")
             user = User.create_user(username, password, role_id)
-            return jsonify(user.serialize()), 200
+            return jsonify({'status': 200, 'account_url': f'/createUserSuccessfully'})
         else:
             print("no hohoho CU")
             return jsonify({'error': 'Username was already taken'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+
+@app.route('/createUserSuccessfully')
+def render_createUserSuccessfully():
+    return render_template('createUserSuccessfully.html')
+
 
 @app.route('/logout')
 def logout():
