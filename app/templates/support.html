@@ -107,6 +107,41 @@
     </script>
             </div>
             <button type="submit" class="submitButton" id="submitBtn">Submit</button>
+
+            <script>
+                document.getElementById('submitBtn').addEventListener('click', function() {
+                    var formData = {
+                        title: document.getElementById('title').value,
+                        description: document.getElementById('description').value,
+                        status: document.getElementById('statusDropdown').value,
+                        device: document.getElementById('deviceDropdown').value,
+                        category: document.getElementById('categoryDropdown').value
+                    };
+
+                    // Konvertiere das JavaScript-Objekt in JSON
+                    var jsonData = JSON.stringify(formData);
+
+                    // Sende die JSON-Daten an den Server
+                    fetch('/ticket', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Hier kannst du mit der Antwort vom Server umgehen
+                            console.log(data);
+
+                            // Zum Beispiel: Weiterleitung zu einer Erfolgsseite
+                            window.location.href = '/success';
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            </script>
+
+
         </form>
     </section>
     <script type="text/javascript" src="../static/feDate.js"></script>

@@ -409,10 +409,16 @@ def render_createUserSuccessfully():
 def logout():
     return redirect(url_for('render_login'))
 
+
 # Endpoint to render login.html
 @app.route('/login')
 def render_login():
     return render_template('login.html')
+
+
+@app.route('/success')
+def render_success():
+    return render_template('success.html')
 
 
 # Endpoint to render ticket.html
@@ -426,6 +432,7 @@ def render_ticket():
 def render_ticketlist():
     # check cookie sessionId in user table - if ok show ticketlist else show login  --> Zukunft Elyas
     return render_template('ticketlist.html')
+
 
 @app.route('/support')
 def render_support():
