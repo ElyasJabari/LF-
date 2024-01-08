@@ -22,10 +22,6 @@
     </nav>
     <section class="formContainer">
         <form action="success.html">
-            <div class="customerID">
-                <label for="customerID" class="paddingT2em">Customer ID:</label>
-                <input type="text" id="customerID" name="customerID" value="">
-            </div>
             <div class="title">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" value=""><br>
@@ -35,47 +31,82 @@
                 <label for="description">Description:</label>
                 <textarea id="description" name="description"></textarea>
             </div>
-            <div class="estimatedTime">
-                <label for="ET" class="paddingT2em">Time estimate:</label>
-                <select id="ET" name="ET">
-                    <option value="8h">8h</option>
-                    <option value="4h">4h</option>
-                    <option value="2h">2h</option>
-                    <option value="1h 30m">1h 30m</option>
-                    <option value="1h">1h</option>
-                    <option value="30m">30m</option>
-                </select>
+<div class="status">
+                <label for="statusDropdown">Select a Category:</label>
+    <select id="statusDropdown">
+        <!-- Categories will be dynamically populated here -->
+    </select>
+
+    <script>
+        // Fetch categories from the /category/list endpoint
+        fetch('/status/list')
+            .then(response => response.json())
+            .then(stati => {
+                // Reference to the dropdown element
+                const statusDropdown = document.getElementById('statusDropdown');
+
+                // Iterate through categories and add options to the dropdown
+                stati.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status.id;
+                    option.text = status.name;
+                    statusDropdown.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching stati:', error));
+    </script>
             </div>
-            <div class="priority">
-                <label for="priority" class="paddingT1em">Priority:</label>
-                <select id="priority" name="priority">
-                    <option value="Blocker">Blocker</option>
-                    <option value="Highest">Highest</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Lowest">Lowest</option>
-                </select>
+            <div class="device">
+                <label for="statusDropdown">Select a Category:</label>
+    <select id="deviceDropdown">
+        <!-- Categories will be dynamically populated here -->
+    </select>
+
+    <script>
+        // Fetch categories from the /category/list endpoint
+        fetch('/device/list')
+            .then(response => response.json())
+            .then(devices => {
+                // Reference to the dropdown element
+                const deviceDropdown = document.getElementById('deviceDropdown');
+
+                // Iterate through categories and add options to the dropdown
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.id;
+                    option.text = device.name;
+                    deviceDropdown.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching devices:', error));
+    </script>
             </div>
             <div class="category">
-                <label for="category" class="category">Category:</label>
-                <select id="category" name="category">
-                    <option value="Buying">Buying</option>
-                    <option value="Returns">Returns</option>
-                    <option value="Login">Login</option>
-                    <option value="Payment">Payment</option>
-                    <option value="History">History</option>
-                </select>
+                <label for="categoryDropdown">Select a Category:</label>
+    <select id="categoryDropdown">
+        <!-- Categories will be dynamically populated here -->
+    </select>
+
+    <script>
+        // Fetch categories from the /category/list endpoint
+        fetch('/category/list')
+            .then(response => response.json())
+            .then(categories => {
+                // Reference to the dropdown element
+                const categoryDropdown = document.getElementById('categoryDropdown');
+
+                // Iterate through categories and add options to the dropdown
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.text = category.name;
+                    categoryDropdown.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+    </script>
             </div>
-            <hr>
-            <div class="creationD">
-                <label for="creationD" class="paddingT1em">Creation Date:</label>
-                <input type="text" id="creationD" name="creation_date"/>
-            </div>
-            <div class="dueDate">
-                <label for="dueD" class="paddingT1em">Due by:</label>
-                <input type="date" id="dueD" name="due_date" value="" min="2022-01-01" max="2025-12-31" />
-            </div>
-            <button type="submit" class="submitButton">Submit</button>
-            <!--<a href="success.html">Submit</a>-->
+            <button type="submit" class="submitButton" id="submitBtn">Submit</button>
         </form>
     </section>
     <script type="text/javascript" src="../static/feDate.js"></script>
